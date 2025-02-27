@@ -13,142 +13,103 @@
   <script src="../static/mrst/js/jspsych-mrst-trial.js"></script>
   <script src="../static/mrst/js/jspsych-mrst-instructions.js"></script>
   <script src="../static/mrst/js/jspsych-mrst-comprehension.js"></script>
-
-
-
   <script src="../static/lib/jspsych-7.2.1/plugins/plugin-preload.js"></script>
   <script src="../static/lib/jspsych-7.2.1/plugins/plugin-fullscreen.js"></script>
   <script src="../static/lib/jspsych-7.2.1/plugins/plugin-survey-text.js" type="text/javascript"></script>
+  <!-- For call-function trials if needed -->
+  <script src="../static/lib/jspsych-7.2.1/plugins/plugin-call-function.js"></script>
 
   <script src="../static/nivturk-plugins.js"></script>
   <!-- Load CSS styles -->
-  <link href="../static/lib/jspsych-7.2.1/css/jspsych.css" rel="stylesheet" type="text/css"></link>
-  <link href="../static/mrst/css/mrst-css.min.css" rel="stylesheet" type="text/css"></link>
-
+  <link href="../static/lib/jspsych-7.2.1/css/jspsych.css" rel="stylesheet" type="text/css">
+  <link href="../static/mrst/css/mrst-css.min.css" rel="stylesheet" type="text/css">
 </head>
 <body></body>
 <script>
-
-  // Display alert message on back/refresh.
-  // https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onbeforeunload
-  function verify_unload(e){
+  // Standard unload and jsPsych initialization
+  function verify_unload(e) {
     e.preventDefault();
     (e || window.event).returnValue = null;
     incomplete_save();
     return null;
-  };
-  // Define global variables.
+  }
   fout = false;
-
   window.addEventListener("beforeunload", verify_unload);
-
-  
-
   var jsPsych = initJsPsych({
     show_progress_bar: true,
-    message_progress_bar:'',
-    use_webaudio:true,
+    message_progress_bar: '',
+    use_webaudio: true,
     auto_update_progress_bar: false,
-    //override_safe_mode:true,
     on_finish: function() {
-
-      // Remove requirement to verify redirect
       window.removeEventListener("beforeunload", verify_unload);
-
-      // Add interactions to the data variable
       var interaction_data = jsPsych.data.getInteractionData();
-      jsPsych.data.get().addToLast({interactions: interaction_data.json()});
-
-      // Download data
-      jsPsych.data.get().localSave('json',fout+'_part1.json');
-
-
-      // Display jsPsych data in viewport.
-      interim_redirect_success(fout+'_part1.json');
-
+      jsPsych.data.get().addToLast({ interactions: interaction_data.json() });
+      jsPsych.data.get().localSave('json', fout + '_part1.json');
+      interim_redirect_success(fout + '_part1.json');
     }
   });
+  jsPsych.data.addProperties({ task: 'mrst', task_version: '0.2.H' });
+</script>
 
-  // Add version metadata.
-  jsPsych.data.addProperties({
-    task: 'mrst',
-    task_version: '0.2.H',
-  });
+<!-- Load experiment files -->
+<script src="../static/mrst/js/mrst-params.js"></script>
+<script src="../static/mrst/js/mrst-utils.js"></script>
+<script src="../static/mrst/js/mrst-text-he.js"></script>
+<script src="../static/mrst/js/mrst-experiment.js"></script> <!-- must define pickStimuliSet() & buildMRST() -->
+<script src="../static/mrst/js/mrst-instructions.js"></script>
 
-  </script>
-  <!-- Load expeirment -->
-  <script src="../static/mrst/js/mrst-params.js"></script>
-  <script src="../static/mrst/js/mrst-utils.js"></script>
+<script>
 
-  <script src="../static/mrst/js/mrst-text-he.js"></script>
 
-  <script src="../static/mrst/js/mrst-experiment.js"></script>
-  <script src="../static/mrst/js/mrst-instructions.js"></script>
-  <script>
 
-  // Define image preloading.
+  // --- Other trial definitions (PRELOAD, FULLSCREEN, instructions, etc.) ---
   var PRELOAD = {
     type: jsPsychPreload,
     images: preload_images,
     audio: preload_audio,
     message: preload_msg,
-  }
+  };
 
-  // Define experiment fullscreen.
   var FULLSCREEN = {
     type: jsPsychFullscreen,
     fullscreen_mode: true,
-    message:fullscreen,
-    button_label:continue_label
+    message: fullscreen,
+    button_label: continue_label
+  };
+
+  INSTRUCTIONS.on_start = function() { pass_message(fout, 'a', 'INSTRUCTIONS'); };
+  READY_01.on_start = function() { pass_message(fout, 'a', 'READY_01'); };
+  MRST.on_start = function() { pass_message(fout, 'a', 'MRST'); };
+  PRE_READY_02.on_start = function() { pass_message(fout, 'a', 'PRE_READY_02'); };
+
+  // --- Build the final timeline AFTER preliminary phase ---
+  function buildFinalTimeline() {
+    // Here, we assume pickStimuliSet() and buildMRST() are defined in mrst-experiment.js
+    pickStimuliSet();    // Set global 'stimuli' based on window.userStimuliChoice
+    MRST = buildMRST();  // Build the MRST array now that 'stimuli' is chosen
+    console.log("Final MRST built. Length =", MRST.length);
+
+    var timeline = [];
+    timeline.push(PRELOAD);
+    timeline.push(FULLSCREEN);
+    // timeline.push(INSTRUCTIONS); // if desired
+    timeline.push(READY_01);
+    timeline = timeline.concat(MRST.slice(0, N_trials_first_part));
+    timeline.push(PRE_READY_02);
+    timeline.push(READY_02);
+    timeline = timeline.concat(MRST.slice(N_trials_first_part, total_trials + 1));
+    timeline.push(FINISHED);
+    return timeline;
   }
 
-  //SAVE DATA at the half way point (during break).
-  // PRE_READY_02.on_finish = function() {
-  //   interim_redirect_success(fout+'_part1.json');
-  //   jsPsych.data.get().localSave('json',fout+'_part1.json');
-
-  // }
-
-  INSTRUCTIONS.on_start = function() {
-    msg = 'INSTRUCTIONS'
-    mode='a'
-    pass_message(fout, mode, msg);
-  }
-  READY_01.on_start = function() {
-    msg = 'READY_01'
-    mode='a'
-    pass_message(fout, mode, msg);
-  }
-
-  MRST.on_start = function() {
-    msg = 'MRST'
-    mode='a'
-    pass_message(fout, mode, msg);
-  }
-
-
-  PRE_READY_02.on_start = function() {
-    msg = 'PRE_READY_02'
-    mode='a'
-    pass_message(fout, mode, msg);
-  }
-
-
-  // Initialize timeline.
-  var timeline = [];
-  timeline = timeline.concat(GETSUBJECTID);
-  timeline = timeline.concat(PRELOAD);
-  timeline = timeline.concat(FULLSCREEN);
-  timeline = timeline.concat(INSTRUCTIONS);
-  timeline = timeline.concat(READY_01);
-  timeline = timeline.concat(MRST.slice( 0,  N_trials_first_part));
-  timeline = timeline.concat(PRE_READY_02);
-  // timeline = timeline.concat(READY_02);
-  // timeline = timeline.concat(MRST.slice(N_trials_first_part,  N_trials+1));
-  // timeline = timeline.concat(FINISHED);
-
-
-  jsPsych.run(timeline);
-
+  // --- Run the preliminary timeline first ---
+  var preTimeline = [ GETSUBJECTID, GET ];
+  jsPsych.run(preTimeline).then(function() {
+    // Now that GETSUBJECTID and GET have run and window.userStimuliChoice is set,
+    // build the final timeline and run it.
+    var finalTimeline = buildFinalTimeline();
+    console.log("Final timeline built. Number of trials:", finalTimeline.length);
+    jsPsych.run(finalTimeline);
+  });
 </script>
 </html>

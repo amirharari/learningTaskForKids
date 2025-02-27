@@ -105,7 +105,7 @@ const pressSpacebar = {
 // Filler page after attention check to reorient to spacebar
 const pressSpacebarSaveHalfTime = {
   type: jsPsychHtmlKeyboardResponse,
-  stimulus: 'לחצו על מקש הרווח כדי להמשיך. שימו לב, כשתלחצו ״המשך״ הנתונים ישמרו במחשב.',
+  stimulus: 'לחצו על מקש הרווח כדי להמשיך. .',
   trial_duration: 10000,
   on_finish(trial_data){
     trial_data.press_spacebar = trial_data.response

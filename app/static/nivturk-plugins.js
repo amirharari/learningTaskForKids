@@ -130,3 +130,16 @@ var GETSUBJECTID = {
   }
 
 }
+
+  var GET = {
+    type: jsPsychSurveyText,
+    button_label: 'המשך',
+    questions: [
+      { prompt: 'נא לבחור גרסת ניסוי (1 או 2)', placeholder: '1', required: true }
+    ],
+    on_finish: function(data) {
+      var versionChoice = data.response["Q0"];
+      window.userStimuliChoice = versionChoice;
+      console.log("User chose version:", window.userStimuliChoice);
+    }
+  };
