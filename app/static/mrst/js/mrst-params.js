@@ -83,22 +83,22 @@ var stimuli1 = jsPsych.randomization.shuffle([
     '../static/mrst/img/animals/seahorse-silhouette.svg'
   ]),
   jsPsych.randomization.shuffle([
-    '../static/mrst/img/animals/parrot-shape.svg', // Changed from snail-shape.svg
+    '../static/mrst/img/animals/parrot-shape.svg',
     '../static/mrst/img/animals/kangaroo-shape.svg',
-    '../static/mrst/img/animals/tortoise-shape.svg', // Changed from frog-shape.svg
-    '../static/mrst/img/animals/jellyfish-shape.svg' // Changed from missing aquatic animal
+    '../static/mrst/img/animals/turtle-shape.svg',
+    '../static/mrst/img/animals/fish-dimidiatus-shape.svg'
   ]),
   jsPsych.randomization.shuffle([
     '../static/mrst/img/animals/bear-black-shape.svg',
     '../static/mrst/img/animals/bird-shape.svg',
     '../static/mrst/img/animals/crocodile-shape.svg',
-    '../static/mrst/img/animals/dolphin-mammal-animal-silhouette.svg' // Changed from monkey.svg
+    '../static/mrst/img/animals/dolphin-mammal-animal-silhouette.svg'
   ]),
   jsPsych.randomization.shuffle([
+    '../static/mrst/img/animals/swift-bird-shape.svg',
     '../static/mrst/img/animals/squirrel-shape.svg',
-    '../static/mrst/img/animals/bull-silhouette.svg',
-    '../static/mrst/img/animals/salamander-shape.svg', // Changed from dolphin-mammal-animal-silhouette.svg
-    '../static/mrst/img/animals/swift-bird-shape.svg'
+    '../static/mrst/img/animals/snake-silhouette.svg', // replaced duplicate turtle
+    '../static/mrst/img/animals/goliath-grouper-fish-shape.svg' // new aquatic animal
   ])
 ]);
 
@@ -110,22 +110,22 @@ var stimuli2 = jsPsych.randomization.shuffle([
     '../static/mrst/img/animals/shark-shape.svg'
   ]),
   jsPsych.randomization.shuffle([
-    '../static/mrst/img/animals/octopus-shape.svg', // Changed from slug-shape.svg
+    '../static/mrst/img/animals/flamingo.svg',
     '../static/mrst/img/animals/koala-silhouette.svg',
-    '../static/mrst/img/animals/iguana-silhouette.svg', // Changed from grasshopper-insect-side-view-shape.svg
-    '../static/mrst/img/animals/flamingo.svg'
+    '../static/mrst/img/animals/iguana-silhouette.svg',
+    '../static/mrst/img/animals/scamp-grouper-fish.svg'
   ]),
   jsPsych.randomization.shuffle([
     '../static/mrst/img/animals/tiger.svg',
     '../static/mrst/img/animals/hawk-bird-animal-shape.svg',
     '../static/mrst/img/animals/snake-silhouette.svg',
-    '../static/mrst/img/animals/stingray-shape.svg' // Changed from running-lion.svg
+    '../static/mrst/img/animals/halibut-fish-shape.svg'
   ]),
   jsPsych.randomization.shuffle([
+    '../static/mrst/img/animals/pigeon-bird-shape.svg',
     '../static/mrst/img/animals/fox-shape.svg',
-    '../static/mrst/img/animals/sheep.svg',
-    '../static/mrst/img/animals/alligator-shape.svg', // Changed from orca-silhouette.svg
-    '../static/mrst/img/animals/pigeon-bird-shape.svg'
+    '../static/mrst/img/animals/crocodile-shape.svg',
+    '../static/mrst/img/animals/blue-whale-shape.svg' // added aquatic, removed extra mammal
   ])
 ]);
 
