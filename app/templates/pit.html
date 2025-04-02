@@ -7,14 +7,8 @@
   <!-- Load libraries -->
   <script src="../../app/static/lib/jquery-3.3.1/jquery.min.js"></script>
   <script src="../../app/static/lib/jspsych-6.3.1/jspsych.js"></script>
-
   <!-- Load NivTurk plug-ins -->
   <script src="../../app/static/js/nivturk-plugins.js" type="text/javascript"></script>
-
-  <!-- Load experiment -->
-  <script src="../../app/static/js/pit/pit-runsheets.js" type="text/javascript"></script>
-  <script src="../../app/static/js/pit/pit-experiment.js" type="text/javascript"></script>
-  <script src="../../app/static/js/pit/pit-instructions.js" type="text/javascript"></script>
 
   <!-- Load jsPsych plug-ins -->
   <script src="../../app/static/js/jspsych-screen-check.js" type="text/javascript"></script>
@@ -27,84 +21,112 @@
   <script src="../../app/static/lib/jspsych-6.3.1/plugins/jspsych-fullscreen.js"></script>
 
   <!-- Load CSS styles -->
-  <link href="../../app/static/lib/jspsych-6.3.1/css/jspsych.css" rel="stylesheet" type="text/css"></link>
-  <link href="../../app/static/css/factory-css.min.css" rel="stylesheet" type="text/css"></link>
+  <link href="../../app/static/lib/jspsych-6.3.1/css/jspsych.css" rel="stylesheet" type="text/css">
+  <link href="../../app/static/css/factory-css.min.css" rel="stylesheet" type="text/css">
 
+  <!-- (Optional) Load instructions or other .js if needed -->
+  <script src="../../app/static/js/pit/pit-parameters.js" type="text/javascript"></script>
+  <script src="../../app/static/js/pit/pit-runsheets.js" type="text/javascript"></script>
+  <script src="../../app/static/js/pit/pit-experiment.js" type="text/javascript"></script>
+  <!-- IMPORTANT: Load pit-experiment.js BEFORE the script that calls buildPITExperiment() -->
+  <script src="../../app/static/js/pit/pit-experiment.js" type="text/javascript"></script>
 </head>
 <body></body>
-<script>
 
-  // Display alert message on back/refresh.
-  // https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onbeforeunload
-  function verify_unload(e){
+<script>
+  //------------------------------------
+  // Prevent accidental back/refresh
+  //------------------------------------
+  function verify_unload(e) {
     e.preventDefault();
     (e || window.event).returnValue = null;
     return null;
-  };
+  }
   window.addEventListener("beforeunload", verify_unload);
 
-  // ---- NEW PART: Prompt for a username at the very beginning ----
-  var fout = window.prompt("Please enter your username:", "Participant01");
-  // Optional: handle empty or null inputs
-  if(!fout){ 
+  //------------------------------------
+  // Prompt for subject ID & Stimuli
+  //------------------------------------
+  var fout = window.prompt("Please enter your subject ID:", "Participant01");
+  if(!fout){
     fout = "anonymous";
   }
 
-  // Add metadata to the data
-  jsPsych.data.addProperties({
-    battery_task: 'pit',
-    task_version: '1.0',
-    jspsych_version: '6.3.1',
-    participant: fout
-  });
-
-  // Define global variables.
-  var low_quality = false;
-
-  // Define experiment fullscreen.
-  var FULLSCREEN = {
-    type: 'fullscreen',
-    fullscreen_mode: true,
-    data: {datetime: new Date().toString()}
+  window.chosenStimuli = window.prompt("Which stimuli set do you want, '1' or '2'?", "1");
+  if(!window.chosenStimuli || (window.chosenStimuli !== "1" && window.chosenStimuli !== "2")) {
+    window.chosenStimuli = "1"; // fallback
   }
 
-  // Define debriefing forms.
-  var DEBRIEF = {type: 'survey-debrief'}
+  jsPsych.data.addProperties({
+    participant: fout,
+    chosen_stimuli: window.chosenStimuli,
+    battery_task: 'pit'
+  });
 
-  // Define timeline.
-  var timeline = [];
-  timeline = timeline.concat(FULLSCREEN);
-  timeline = timeline.concat(INSTRUCTIONS);
-  timeline = timeline.concat(READY_01);
-  timeline = timeline.concat(PIT.slice(0,120));
-  timeline = timeline.concat(READY_02);
-  timeline = timeline.concat(PIT.slice(120,240));
-  timeline = timeline.concat(FINISHED);
-  //timeline = timeline.concat(DEBRIEF);
+  //------------------------------------
+  // Example: Fullscreen, instructions, etc.
+  //------------------------------------
+  var FULLSCREEN = {
+    type: 'fullscreen',
+    fullscreen_mode: true
+  };
 
+  var INSTRUCTIONS = {
+    type: 'pit-instructions',
+    pages: [
+      "Instructions go here.",
+      "Press Next to continue."
+    ],
+    show_clickable_nav: true
+  };
+
+  //------------------------------------
+  // Build final timeline
+  //------------------------------------
+  function buildFinalTimeline() {
+    // 1) Build the PIT experiment by calling buildPITExperiment(),
+    //    which is defined in pit-experiment.js
+    var experiment = buildPITExperiment();
+    // This returns { PIT, READY_01, READY_02, FINISHED }
+
+    var PIT      = experiment.PIT;
+    var READY_01 = experiment.READY_01;
+    var READY_02 = experiment.READY_02;
+    var FINISHED = experiment.FINISHED;
+
+    var timeline = [];
+    timeline.push(FULLSCREEN);
+    timeline.push(INSTRUCTIONS);
+    timeline.push(READY_01);
+
+    // e.g. If each block is 120 trials
+    timeline = timeline.concat(PIT.slice(0,120));
+    timeline.push(READY_02);
+    timeline = timeline.concat(PIT.slice(120,240));
+    timeline.push(FINISHED);
+
+    return timeline;
+  }
+
+  //------------------------------------
+  // Initialize jsPsych
+  //------------------------------------
   jsPsych.init({
-    timeline: timeline,
+    timeline: buildFinalTimeline(),
     show_progress_bar: true,
     on_finish: function() {
-
-      // Remove requirement to verify redirect
+      // Remove the “beforeunload” prompt
       window.removeEventListener("beforeunload", verify_unload);
 
       // Add interaction data
       var interaction_data = jsPsych.data.getInteractionData();
-      jsPsych.data.get().addToLast({interactions: interaction_data.count()});
-      jsPsych.data.get().addToLast({interactions: interaction_data.json()});
+      jsPsych.data.get().addToLast({ interactions_count: interaction_data.count() });
+      jsPsych.data.get().addToLast({ interactions_log: interaction_data.json() });
 
-      if (low_quality) {
-        // Optionally save a "reject" dataset to disk
-        redirect_reject("1005");
-      } else {
-        // ---- NEW PART: Save data locally with the username ----
-        jsPsych.data.get().localSave('json', fout + '_part1.json');
-        interim_redirect_success(fout + '_part1.json');
-      }
+      // Save the data
+      jsPsych.data.get().localSave('json', fout + '_part1.json');
+      interim_redirect_success(fout + '_part1.json');
     }
   });
-
 </script>
 </html>

@@ -413,5 +413,5 @@ const runsheet_s28 = {
 
 // Uncomment to select a runsheet.
 // var runsheets = [runsheet_s00, runsheet_s03];
-// var runsheets = [runsheet_s14, runsheet_s19];
-var runsheets = [runsheet_s13, runsheet_s28];
+var runsheets1 = [runsheet_s14, runsheet_s19];
+var runsheets2 = [runsheet_s13, runsheet_s28];
