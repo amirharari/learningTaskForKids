@@ -13,14 +13,14 @@ function buildPITExperiment() {
   // 2) Decide which rune_set to use
   let rune_set;
   if (chosenStimuli === "1") {
-    rune_set = "elianto";
+    rune_set = "bacs2";
     runsheets = jsPsych.randomization.shuffle(runsheets1);
   } else if (chosenStimuli === "2") {
     rune_set = "bacs1";
     runsheets = jsPsych.randomization.shuffle(runsheets2);
   } else {
     // fallback
-    rune_set = "elianto";
+    rune_set = "bacs1";
   }
 
   console.log("Final rune_set:", rune_set);
