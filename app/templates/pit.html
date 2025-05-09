@@ -88,13 +88,13 @@
 
     var timeline = [];
     timeline.push(FULLSCREEN);
- //   timeline.push(INSTRUCTIONS);
+    timeline.push(INSTRUCTIONS);
     timeline.push(READY_01);
 
     // e.g. If each block is 120 trials
-    timeline = timeline.concat(PIT.slice(0,4));
+    timeline = timeline.concat(PIT.slice(0,120));
     timeline.push(READY_02);
-    timeline = timeline.concat(PIT.slice(120,124));
+    timeline = timeline.concat(PIT.slice(120,240));
     timeline.push(FINISHED);
 
     return timeline;
