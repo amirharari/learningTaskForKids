@@ -96,16 +96,16 @@ function buildPITExperiment() {
 
         if (valence === 'win' && sham === 0) {
           outcome_correct   = '+10';
-          outcome_incorrect = '+1';
+          outcome_incorrect = '0';
         } else if (valence === 'win') {
-          outcome_correct   = '+1';
+          outcome_correct   = '0';
           outcome_incorrect = '+10';
         } else if (valence === 'lose' && sham === 0) {
-          outcome_correct   = '-1';
+          outcome_correct   = '0';
           outcome_incorrect = '-10';
         } else {
           outcome_correct   = '-10';
-          outcome_incorrect = '-1';
+          outcome_incorrect = '0';
         }
 
         // Screen size check
